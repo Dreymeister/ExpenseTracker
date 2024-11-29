@@ -36,6 +36,8 @@ public class ExpenseTracker {
         // Total amount label
         JLabel totalLabel = new JLabel("Total: $" + totalAmount);
         totalLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        Font largeFont = new Font("Arial", Font.BOLD, 30); // Make the font size larger
+        totalLabel.setFont(largeFont);  // Set the larger font
         buttonPanel.add(totalLabel);  // Add the total label at the top
 
         // Create buttons
