@@ -93,7 +93,7 @@ public class ExpenseTracker {
                 return;
             }
 
-            totalAmount -= amount;
+            totalAmount -= amount;  // Subtract expense amount from total balance
             totalExpenses += amount;
             expenseCount++;
 
@@ -176,4 +176,3 @@ public class ExpenseTracker {
         }
     }
 }
-
