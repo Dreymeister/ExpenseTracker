@@ -18,8 +18,8 @@ public class ExpenseTracker {
 
     public static void main(String[] args) {
         ExpenseTracker app = new ExpenseTracker();
-        app.showStartingBalanceDialog();  // Prompt for starting balance
-        app.createGUI();  // Proceed to GUI after starting balance is set
+        app.showStartingBalanceDialog();
+        app.createGUI();
     }
 
     private void createGUI() {
@@ -29,7 +29,11 @@ public class ExpenseTracker {
         frame.setLocationRelativeTo(null);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(7, 1));
+        buttonPanel.setLayout(new GridLayout(8, 1));
+
+        JLabel titleLabel = new JLabel("<html><u>Expense Tracker</u></html>");
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
 
         JLabel totalLabel = new JLabel("Total Balance: $" + String.format("%.2f", totalAmount));
         totalLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -43,6 +47,7 @@ public class ExpenseTracker {
         countLabel.setHorizontalAlignment(SwingConstants.CENTER);
         countLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
+        buttonPanel.add(titleLabel);
         buttonPanel.add(totalLabel);
         buttonPanel.add(countLabel);
 
@@ -75,7 +80,7 @@ public class ExpenseTracker {
                 totalAmount = Double.parseDouble(startingBalanceStr);
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Invalid starting balance. Please enter a valid number.");
-                showStartingBalanceDialog();  // Re-prompt the user if the input is invalid
+                showStartingBalanceDialog();
             }
         }
     }
@@ -93,7 +98,7 @@ public class ExpenseTracker {
                 return;
             }
 
-            totalAmount -= amount;  // Subtract expense amount from total balance
+            totalAmount -= amount;
             totalExpenses += amount;
             expenseCount++;
 
@@ -113,11 +118,16 @@ public class ExpenseTracker {
 
         try {
             double amount = Double.parseDouble(amountStr);
+            String category = JOptionPane.showInputDialog("Enter Category:");
+            if (category == null) {
+                return;
+            }
+
             totalAmount += amount;
             totalSavings += amount;
             savingsCount++;
 
-            savings.add(new String[]{"Saving", "$" + String.format("%.2f", amount)});
+            savings.add(new String[]{"Saving", "$" + String.format("%.2f", amount), category});
             updateLabels(totalLabel, countLabel);
             JOptionPane.showMessageDialog(null, "Savings Added: $" + String.format("%.2f", amount));
         } catch (NumberFormatException e) {
@@ -127,14 +137,17 @@ public class ExpenseTracker {
 
     private void updateLabels(JLabel totalLabel, JLabel countLabel) {
         totalLabel.setText("Total Balance: $" + String.format("%.2f", totalAmount));
-        countLabel.setText("Expenses: $" + String.format("%.2f", totalExpenses) + 
-                           " (" + expenseCount + " entries) | " +
-                           "Savings: $" + String.format("%.2f", totalSavings) + 
-                           " (" + savingsCount + " entries)");
+
+        String expenseText = "Expenses: <font color='red'>$" + String.format("%.2f", totalExpenses) + "</font>" + 
+                             " (" + expenseCount + " entries)";
+        String savingsText = "Savings: <font color='green'>$" + String.format("%.2f", totalSavings) + "</font>" + 
+                             " (" + savingsCount + " entries)";
+
+        countLabel.setText("<html>" + expenseText + " | " + savingsText + "</html>");
     }
 
     private void showQueryDialog() {
-        String[][] data = new String[expenses.size() + savings.size()][];
+        String[][] data = new String[expenses.size() + savings.size()][3];
         int rowIndex = 0;
 
         for (String[] expense : expenses) {
