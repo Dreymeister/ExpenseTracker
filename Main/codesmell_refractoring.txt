@@ -1,0 +1,71 @@
+1. Duplicated Logic for UI Updates - Found 11/27/24
+   - Smell: There was redundant code for updating the UI in multiple places.
+   - Fix: Used more of a strategy pattern by encapsulating more code into certain blocks. Making flow easier to understand.
+
+   private void updateTotalAndCountLabels(JLabel totalLabel, JLabel countLabel) {
+       // Extract logic for handling expense input, reduced redudancy
+   }
+
+---
+
+2. Large Method: `showAddExpenseDialog` and `showAddSavingsDialog` - Found 11/28/24
+   - Smell: Both the `showAddExpenseDialog` and `showAddSavingsDialog` methods are large, wanted to condense these to fit more in line.
+   - Fix: used more of a template pattern to help with overall formatting stucture.
+
+   private void handleExpenseInput(JLabel totalLabel, JLabel countLabel) {
+       // Extract logic for handling expense input
+   }
+
+   private void handleSavingsInput(JLabel totalLabel, JLabel countLabel) {
+       // Extract logic for handling savings input
+   }
+
+---
+
+3. Hardcoded Colors in Dark Mode Logic - Found 11/30/24
+   - Smell: The dark mode color scheme is hardcoded within the methods, which reduces flexibility and makes it harder to change the theme in the future.
+   - Fix: Used Factory pattern to reduce the repetitiveness.
+
+   private static final Color DARK_MODE_BACKGROUND = Color.DARK_GRAY;
+   private static final Color DARK_MODE_FOREGROUND = Color.WHITE;
+   private static final Color LIGHT_MODE_BACKGROUND = Color.WHITE;
+   private static final Color LIGHT_MODE_FOREGROUND = Color.BLACK;
+
+---
+
+4. Confusing Type Meanings and Constrained Code
+   - Smell: The application logic for expenses and savings is tightly coupled to the UI components like `JLabel` and `JButton`.
+   - Fix: Moved Private methods in place to reduce tightness and constrains on code.
+
+   private void addExpense(double amount, String category, String date) {
+       // Move this logic out of the UI method
+   }
+
+   private void addSavings(double amount, String category, String date) {
+       // Move this logic out of the UI method
+   }
+
+---
+
+More Fixes within Main Java Files
+
+1. Fixed Count Labels:
+   - The count label now properly updates the balance, expense, and savings entries after an expense or savings is added. The previous issues of label formatting are now resolved with HTML tags for improved readability.
+
+2. Fixed Colors for Invalid Input:
+   - The error handling for invalid amounts now correctly displays a message dialog with the proper color formatting, making it easier for users to identify issues with the entered input.
+
+3. Finalized Viewports:
+   - The `JTable` has been adjusted to ensure that the viewport size is appropriate for displaying all the data. This fix ensures that the table displays correctly within the window's layout.
+
+4. Fixed Button Colors:
+   - The buttons' background and text colors are now preserved even when dark mode is toggled, preventing them from being reset to the default colors and improving the overall consistency of the UI.
+
+5. Improved Dark Mode Handling for Dialogs:
+   - The `applyDarkModeToDialogs()` method is introduced to ensure that input dialogs also switch to dark mode, providing a consistent user experience across the application.
+
+6. Improved Date Validation:
+   - The date format validation for expenses and savings is now more robust, ensuring that users input the correct format (MM-DD-YYYY). If the format is incorrect, an error message is displayed.
+
+7. Refined Expense/Savings Addition:
+   - The addition of expenses and savings now updates the total amount, expenses, and savings counts correctly after each addition. The count is dynamically updated and displayed in the label after each new entry.
