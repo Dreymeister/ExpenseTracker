@@ -2,7 +2,9 @@ package Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ExpenseTracker {
@@ -15,6 +17,9 @@ public class ExpenseTracker {
 
     private static List<String[]> expenses = new ArrayList<>();
     private static List<String[]> savings = new ArrayList<>();
+
+    private static Color buttonBackgroundColor;
+    private static Color buttonTextColor;
 
     public static void main(String[] args) {
         ExpenseTracker app = new ExpenseTracker();
@@ -57,6 +62,10 @@ public class ExpenseTracker {
         JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
 
+        // Save the button colors on startup
+        buttonBackgroundColor = addButton.getBackground();
+        buttonTextColor = addButton.getForeground();
+
         addButton.addActionListener(e -> showAddExpenseDialog(totalLabel, countLabel));
         addSavingsButton.addActionListener(e -> showAddSavingsDialog(totalLabel, countLabel));
         queryButton.addActionListener(e -> showQueryDialog());
@@ -97,12 +106,18 @@ public class ExpenseTracker {
             if (category == null) {
                 return;
             }
+            
+            String dateStr = JOptionPane.showInputDialog("Enter Date (MM-DD-YYYY):");
+            if (dateStr == null || !isValidDate(dateStr)) {
+                JOptionPane.showMessageDialog(null, "Invalid date format. Please use MM-DD-YYYY.");
+                return;
+            }
 
             totalAmount -= amount;
             totalExpenses += amount;
             expenseCount++;
 
-            expenses.add(new String[]{"Expense", "$" + String.format("%.2f", amount), category});
+            expenses.add(new String[]{"Expense", "$" + String.format("%.2f", amount), category, dateStr});
             updateLabels(totalLabel, countLabel);
             JOptionPane.showMessageDialog(null, "Expense Added: $" + String.format("%.2f", amount));
         } catch (NumberFormatException e) {
@@ -122,16 +137,33 @@ public class ExpenseTracker {
             if (category == null) {
                 return;
             }
+            
+            String dateStr = JOptionPane.showInputDialog("Enter Date (MM-DD-YYYY):");
+            if (dateStr == null || !isValidDate(dateStr)) {
+                JOptionPane.showMessageDialog(null, "Invalid date format. Please use MM-DD-YYYY.");
+                return;
+            }
 
             totalAmount += amount;
             totalSavings += amount;
             savingsCount++;
 
-            savings.add(new String[]{"Saving", "$" + String.format("%.2f", amount), category});
+            savings.add(new String[]{"Saving", "$" + String.format("%.2f", amount), category, dateStr});
             updateLabels(totalLabel, countLabel);
             JOptionPane.showMessageDialog(null, "Savings Added: $" + String.format("%.2f", amount));
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a valid number.");
+        }
+    }
+
+    private boolean isValidDate(String dateStr) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        sdf.setLenient(false);
+        try {
+            sdf.parse(dateStr);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -147,7 +179,7 @@ public class ExpenseTracker {
     }
 
     private void showQueryDialog() {
-        String[][] data = new String[expenses.size() + savings.size()][3];
+        String[][] data = new String[expenses.size() + savings.size()][4];
         int rowIndex = 0;
 
         for (String[] expense : expenses) {
@@ -158,7 +190,7 @@ public class ExpenseTracker {
             data[rowIndex++] = saving;
         }
 
-        String[] columnNames = {"Type", "Amount", "Category"};
+        String[] columnNames = {"Type", "Amount", "Category", "Date"};
 
         JTable table = new JTable(data, columnNames);
         table.setPreferredScrollableViewportSize(new Dimension(450, 300));
@@ -173,9 +205,19 @@ public class ExpenseTracker {
         Color background = isDarkMode ? Color.WHITE : Color.DARK_GRAY;
         Color foreground = isDarkMode ? Color.BLACK : Color.WHITE;
 
+        // Update frame's content color
         updateComponentColors(frame.getContentPane(), background, foreground);
         frame.getContentPane().setBackground(background);
         frame.repaint();
+
+        // Ensure buttons keep their original colors
+        for (Component comp : frame.getComponents()) {
+            if (comp instanceof JButton) {
+                JButton button = (JButton) comp;
+                button.setBackground(buttonBackgroundColor); // Preserve original button color
+                button.setForeground(buttonTextColor); // Preserve original button text color
+            }
+        }
     }
 
     private void updateComponentColors(Component component, Color background, Color foreground) {
@@ -189,3 +231,4 @@ public class ExpenseTracker {
         }
     }
 }
+
