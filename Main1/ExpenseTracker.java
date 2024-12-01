@@ -1,11 +1,9 @@
-package Main;
+package Main1;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +62,7 @@ public class ExpenseTracker {
 
         JButton addButton = new JButton("Add Expense");
         JButton addSavingsButton = new JButton("Add Savings");
-        JButton queryButton = new JButton("Query"); // Fixed
+        JButton queryButton = new JButton("Query");
         JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
 
@@ -180,7 +178,6 @@ public class ExpenseTracker {
         countLabel.setText("<html>" + expenseText + " | " + savingsText + "</html>");
     }
 
-    @SuppressWarnings("unused")
     private void showQueryDialog() {
         String[][] data = new String[expenses.size() + savings.size()][4];
         int rowIndex = 0;
@@ -223,70 +220,13 @@ public class ExpenseTracker {
             }
         });
 
-        JPanel searchPanel = new JPanel(new BorderLayout());
-        JTextField searchField = new JTextField();
-        JButton searchButton = new JButton("Search");
-        searchPanel.add(new JLabel("Search: "), BorderLayout.WEST);
-        searchPanel.add(searchField, BorderLayout.CENTER);
-        searchPanel.add(searchButton, BorderLayout.EAST);
-
         JScrollPane scrollPane = new JScrollPane(table);
 
         JPanel containerPanel = new JPanel(new BorderLayout());
-        containerPanel.add(searchPanel, BorderLayout.NORTH);
         containerPanel.add(scrollPane, BorderLayout.CENTER);
-
-        searchButton.addActionListener(e -> applySearchHighlight(searchField, table, data, columnNames));
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                applySearchHighlight(searchField, table, data, columnNames);
-            }
-        });
 
         JOptionPane.showMessageDialog(null, containerPanel, "Expenses and Savings", JOptionPane.INFORMATION_MESSAGE);
     }
-
-    private void applySearchHighlight(JTextField searchField, JTable table, String[][] data, String[] columnNames) {
-        String query = searchField.getText().toLowerCase();
-    
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
-        table.setModel(tableModel);
-    
-        if (!query.isEmpty()) {
-            List<String[]> filteredData = new ArrayList<>();
-            for (String[] row : data) {
-                for (String cell : row) {
-                    if (cell.toLowerCase().contains(query)) {
-                        filteredData.add(row);
-                        break;
-                    }
-                }
-            }
-    
-            String[][] filteredArray = new String[filteredData.size()][4];
-            filteredData.toArray(filteredArray);
-            table.setModel(new DefaultTableModel(filteredArray, columnNames));
-        }
-    
-        // Reapply the custom renderer to the "Type" column
-        table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if ("Expense".equals(value)) {
-                    c.setForeground(Color.RED);
-                } else if ("Saving".equals(value)) {
-                    c.setForeground(Color.GREEN);
-                } else {
-                    c.setForeground(Color.BLACK);
-                }
-                return c;
-            }
-        });
-    
-        table.repaint();
-    }    
 
     private void toggleDarkMode(JFrame frame) {
         isDarkMode = !isDarkMode;
@@ -301,4 +241,3 @@ public class ExpenseTracker {
         UIManager.put("OptionPane.messageForeground", Color.WHITE);
     }
 }
-
