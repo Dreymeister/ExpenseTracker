@@ -1,3 +1,35 @@
+Feature refactor:
+
+1. Added a Search Panel to the Query Dialog
+   - A new search panel was introduced in showQueryDialog(), consisting of:
+      - A JTextField for entering search keywords.
+      - A JButton labeled "Search" for triggering the search manually.
+2. Real-Time Search Functionality
+   - A KeyListener was added to the JTextField, enabling the table to update dynamically as users type in the search field.
+      - Key Feature: Users can see filtered results immediately without pressing "Search."
+3. Search Logic (Filtering and Highlighting)
+   - Implemented the applySearchHighlight() method:
+      - Purpose: Filters the data displayed in the table based on the user's query.
+      - Iterates through the data rows and checks if any cell matches the query.
+      - Builds a filtered list of matching rows and updates the table model with the results.
+      - Restores the full dataset if the search field is empty.
+4. Updated Table Renderer
+   - Reapplies the custom renderer for the "Type" column to maintain the color coding (red for expenses, green for savings) after filtering.
+5. Maintained Modularity
+   - The applySearchHighlight() function is isolated, keeping the search logic reusable and easy to update.
+      - Ensures separation of concerns: the query dialog handles UI updates, while the search logic handles filtering.
+6. Enhanced User Experience
+   - Integrated real-time feedback into the query interface.
+   - Ensures the design is intuitive and user-friendly.
+
+Key Benefits of the Refactoring
+Improved Functionality: Users can now search for specific entries by keyword (type, category, date, or amount).
+Enhanced Performance: The search dynamically filters data without modifying the original dataset.
+Reusable Components: The applySearchHighlight() method can be reused or extended for other tables in the application.
+User Experience: The addition of real-time search significantly improves interaction within the query dialog.
+
+Code Smells
+
 1. Duplicated Logic for UI Updates - Found 11/27/24
    - Smell: There was redundant code for updating the UI in multiple places.
    - Fix: Used more of a strategy pattern by encapsulating more code into certain blocks. Making flow easier to understand.

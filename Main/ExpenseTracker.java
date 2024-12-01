@@ -1,13 +1,13 @@
 package Main;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class ExpenseTracker {
 
@@ -290,8 +290,26 @@ public class ExpenseTracker {
 
     private void toggleDarkMode(JFrame frame) {
         isDarkMode = !isDarkMode;
-        buttonBackgroundColor = isDarkMode ? Color.DARK_GRAY : UIManager.getColor("Button.background");
-        buttonTextColor = isDarkMode ? Color.WHITE : UIManager.getColor("Button.foreground");
+    
+        Color backgroundColor = isDarkMode ? Color.DARK_GRAY : Color.LIGHT_GRAY;
+        Color textColor = isDarkMode ? Color.WHITE : Color.BLACK;
+    
+        frame.getContentPane().setBackground(backgroundColor);
+    
+        for (Component comp : frame.getContentPane().getComponents()) {
+            if (comp instanceof JPanel) {
+                comp.setBackground(backgroundColor);
+                for (Component innerComp : ((JPanel) comp).getComponents()) {
+                    if (innerComp instanceof JButton || innerComp instanceof JLabel) {
+                        innerComp.setBackground(backgroundColor);
+                        innerComp.setForeground(textColor);
+                    }
+                }
+            } else if (comp instanceof JLabel) {
+                comp.setForeground(textColor);
+            }
+        }
+    
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
