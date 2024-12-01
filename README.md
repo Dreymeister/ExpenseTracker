@@ -31,9 +31,16 @@ The **Personal Budget and Expense Tracker** is a simple command-line Java applic
 ---
 
 ## **Setup Instructions**
-1. Clone or download the project files.  
+1. Clone or download the project files.
 2. Compile the Java file:  
    javac ExpenseTracker.java
 3. Use command java -cp ".;sqlite-jdbc-3.47.1.0.jar" ExpenseTracker.java to initialize the database.
 4. Use command ExpenseTracker.java to begin application.
+
+
+---
+## **Versions**
+1. Version One is a skeleton protoype of the program.
+2. Version Two added the search to the Query Page, along with a reformed dark mode.
+
 
