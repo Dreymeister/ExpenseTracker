@@ -20,7 +20,9 @@ public class ExpenseTracker {
     private static List<String[]> expenses = new ArrayList<>();
     private static List<String[]> savings = new ArrayList<>();
 
+    @SuppressWarnings("unused")
     private static Color buttonBackgroundColor;
+    @SuppressWarnings("unused")
     private static Color buttonTextColor;
     private static boolean isDarkMode = false;
 
@@ -30,6 +32,7 @@ public class ExpenseTracker {
         app.createGUI();
     }
 
+    @SuppressWarnings("unused")
     private void createGUI() {
         JFrame frame = new JFrame("Expense Tracker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,7 +64,7 @@ public class ExpenseTracker {
 
         JButton addButton = new JButton("Add Expense");
         JButton addSavingsButton = new JButton("Add Savings");
-        JButton queryButton = new JButton("Query");
+        JButton queryButton = new JButton("Query"); // Fixed
         JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
 
@@ -177,6 +180,7 @@ public class ExpenseTracker {
         countLabel.setText("<html>" + expenseText + " | " + savingsText + "</html>");
     }
 
+    @SuppressWarnings("unused")
     private void showQueryDialog() {
         String[][] data = new String[expenses.size() + savings.size()][4];
         int rowIndex = 0;
