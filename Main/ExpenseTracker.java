@@ -2,7 +2,10 @@ package Main;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +20,7 @@ public class ExpenseTracker {
     private static List<String[]> expenses = new ArrayList<>();
     private static List<String[]> savings = new ArrayList<>();
 
-    private static Color buttonBackgroundColor; // Button Fixes Here
+    private static Color buttonBackgroundColor;
     private static Color buttonTextColor;
     private static boolean isDarkMode = false;
 
@@ -53,7 +56,7 @@ public class ExpenseTracker {
         countLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
         buttonPanel.add(titleLabel);
-        buttonPanel.add(totalLabel); // Fixed Count Labels
+        buttonPanel.add(totalLabel);
         buttonPanel.add(countLabel);
 
         JButton addButton = new JButton("Add Expense");
@@ -62,7 +65,6 @@ public class ExpenseTracker {
         JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
 
-        // Save the button colors on startup
         buttonBackgroundColor = addButton.getBackground();
         buttonTextColor = addButton.getForeground();
 
@@ -74,7 +76,7 @@ public class ExpenseTracker {
 
         buttonPanel.add(addButton);
         buttonPanel.add(addSavingsButton);
-        buttonPanel.add(queryButton); // added button formatting
+        buttonPanel.add(queryButton);
         buttonPanel.add(darkLightButton);
         buttonPanel.add(exitButton);
 
@@ -96,7 +98,6 @@ public class ExpenseTracker {
 
     private void showAddExpenseDialog(JLabel totalLabel, JLabel countLabel) {
         if (isDarkMode) {
-            // Apply dark mode to input dialogs
             applyDarkModeToDialogs();
         }
 
@@ -126,13 +127,12 @@ public class ExpenseTracker {
             updateLabels(totalLabel, countLabel);
             JOptionPane.showMessageDialog(null, "Expense Added: $" + String.format("%.2f", amount));
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a valid number."); // Fixed Colors
+            JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a valid number.");
         }
     }
 
     private void showAddSavingsDialog(JLabel totalLabel, JLabel countLabel) {
         if (isDarkMode) {
-            // Apply dark mode to input dialogs
             applyDarkModeToDialogs();
         }
 
@@ -184,15 +184,17 @@ public class ExpenseTracker {
         for (String[] expense : expenses) {
             data[rowIndex++] = expense;
         }
-
         for (String[] saving : savings) {
             data[rowIndex++] = saving;
         }
 
         String[] columnNames = {"Type", "Amount", "Category", "Date"};
-
         JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(new Dimension(450, 300)); // Finalized Viewports
+
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        table.setModel(tableModel);
+
+        table.setPreferredScrollableViewportSize(new Dimension(450, 300));
         table.setFillsViewportHeight(true);
 
         if (isDarkMode) {
@@ -202,87 +204,97 @@ public class ExpenseTracker {
             table.getTableHeader().setForeground(Color.WHITE);
         }
 
-        // Set the custom renderer for the "Type" column
         table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                // Apply red color for "Expense" and green for "Saving"
-                if (value != null) {
-                    if (value.equals("Expense")) {
-                        component.setForeground(Color.RED);
-                    } else if (value.equals("Saving")) {
-                        component.setForeground(Color.GREEN);
-                    } else {
-                        component.setForeground(Color.WHITE);  // Default color for other rows
-                    }
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if ("Expense".equals(value)) {
+                    c.setForeground(Color.RED);
+                } else if ("Saving".equals(value)) {
+                    c.setForeground(Color.GREEN);
+                } else {
+                    c.setForeground(Color.BLACK);
                 }
-
-                return component;
+                return c;
             }
         });
 
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JTextField searchField = new JTextField();
+        JButton searchButton = new JButton("Search");
+        searchPanel.add(new JLabel("Search: "), BorderLayout.WEST);
+        searchPanel.add(searchField, BorderLayout.CENTER);
+        searchPanel.add(searchButton, BorderLayout.EAST);
+
         JScrollPane scrollPane = new JScrollPane(table);
-        JOptionPane.showMessageDialog(null, scrollPane, "Expenses and Savings", JOptionPane.INFORMATION_MESSAGE);
+
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.add(searchPanel, BorderLayout.NORTH);
+        containerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        searchButton.addActionListener(e -> applySearchHighlight(searchField, table, data, columnNames));
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                applySearchHighlight(searchField, table, data, columnNames);
+            }
+        });
+
+        JOptionPane.showMessageDialog(null, containerPanel, "Expenses and Savings", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    private void applySearchHighlight(JTextField searchField, JTable table, String[][] data, String[] columnNames) {
+        String query = searchField.getText().toLowerCase();
+    
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        table.setModel(tableModel);
+    
+        if (!query.isEmpty()) {
+            List<String[]> filteredData = new ArrayList<>();
+            for (String[] row : data) {
+                for (String cell : row) {
+                    if (cell.toLowerCase().contains(query)) {
+                        filteredData.add(row);
+                        break;
+                    }
+                }
+            }
+    
+            String[][] filteredArray = new String[filteredData.size()][4];
+            filteredData.toArray(filteredArray);
+            table.setModel(new DefaultTableModel(filteredArray, columnNames));
+        }
+    
+        // Reapply the custom renderer to the "Type" column
+        table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if ("Expense".equals(value)) {
+                    c.setForeground(Color.RED);
+                } else if ("Saving".equals(value)) {
+                    c.setForeground(Color.GREEN);
+                } else {
+                    c.setForeground(Color.BLACK);
+                }
+                return c;
+            }
+        });
+    
+        table.repaint();
+    }    
 
     private void toggleDarkMode(JFrame frame) {
         isDarkMode = !isDarkMode;
-        Color background = isDarkMode ? Color.DARK_GRAY : Color.WHITE;
-        Color foreground = isDarkMode ? Color.WHITE : Color.BLACK;
-
-        updateComponentColors(frame.getContentPane(), background, foreground);
-        frame.getContentPane().setBackground(background);
-        frame.repaint();
-
-        // Ensure buttons keep their original colors
-        for (Component comp : frame.getComponents()) {
-            if (comp instanceof JButton) {
-                JButton button = (JButton) comp;
-                button.setBackground(buttonBackgroundColor); // Preserve original button color
-                button.setForeground(buttonTextColor); // Preserve original button text color
-            }
-        }
-
-        if (!isDarkMode) {
-            resetUIManagerForLightMode();  // Reset UI Manager settings for light mode
-        }
-
-        // Update the query dialog and input fields
-        if (isDarkMode) {
-            applyDarkModeToDialogs();
-        }
-    }
-
-    private void resetUIManagerForLightMode() {
-        UIManager.put("OptionPane.background", Color.WHITE);
-        UIManager.put("Panel.background", Color.WHITE);
-        UIManager.put("OptionPane.messageForeground", Color.BLACK);
-        UIManager.put("TextField.background", Color.WHITE);
-        UIManager.put("TextField.foreground", Color.BLACK);
-        UIManager.put("Button.background", Color.LIGHT_GRAY);
-        UIManager.put("Button.foreground", Color.BLACK);
+        buttonBackgroundColor = isDarkMode ? Color.DARK_GRAY : UIManager.getColor("Button.background");
+        buttonTextColor = isDarkMode ? Color.WHITE : UIManager.getColor("Button.foreground");
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     private void applyDarkModeToDialogs() {
         UIManager.put("OptionPane.background", Color.DARK_GRAY);
         UIManager.put("Panel.background", Color.DARK_GRAY);
         UIManager.put("OptionPane.messageForeground", Color.WHITE);
-        UIManager.put("TextField.background", Color.GRAY);
-        UIManager.put("TextField.foreground", Color.WHITE);
-        UIManager.put("Button.background", Color.DARK_GRAY);
-        UIManager.put("Button.foreground", Color.WHITE);
-    }
-
-    private void updateComponentColors(Component component, Color background, Color foreground) {
-        component.setBackground(background);
-        component.setForeground(foreground);
-
-        if (component instanceof Container) {
-            for (Component child : ((Container) component).getComponents()) {
-                updateComponentColors(child, background, foreground);
-            }
-        }
     }
 }
+
