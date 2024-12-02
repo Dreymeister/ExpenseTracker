@@ -1,0 +1,104 @@
+
+Design Patterns Analysis File for ExpenseTracker
+
+1. Singleton Pattern
+   - Why: When formatting the second implementation, we've decided to use the singleton pattern to enforce capsulation.
+      When doing this, encapsulating the ExpenseTracker class with the Singleton Pattern 
+          would ensure only one instance exists.
+   - Integration:
+     Modify the ExpenseTracker class:
+     ```java
+     public class ExpenseTracker {
+         private static ExpenseTracker instance;
+
+         private ExpenseTracker() {}
+
+         public static ExpenseTracker getInstance() {
+             if (instance == null) {
+                 instance = new ExpenseTracker();
+             }
+             return instance;
+         }
+     }
+     ```
+
+2. Observer Pattern
+   - Why: When we developed the second iteration, the Observer Pattern was applied to decouple the state from 
+          the display logic, making the code more modular.
+   - Integration:
+     a. Created an Observer interface:
+     ```java
+     public interface Observer {
+         void update(String data);
+     }
+     ```
+     b. Modified JLabel instances to implement Observer and register them in the ExpenseTracker:
+     ```java
+     public class ExpenseTracker {
+         private List<Observer> observers = new ArrayList<>();
+         
+         public void addObserver(Observer observer) {
+             observers.add(observer);
+         }
+
+         public void notifyObservers(String data) {
+             for (Observer observer : observers) {
+                 observer.update(data);
+             }
+         }
+     }
+     ```
+
+3. Strategy Pattern
+   - Why: The application processes input differently for expenses and savings. We decided to use encapsulation to form
+          these operations into separate classes to simplify extensibility.
+   - Integration:
+     Define strategies for Expense and Savings:
+     ```java
+     public interface TransactionStrategy {
+         void processTransaction(double amount, String category, String date);
+     }
+
+     public class ExpenseStrategy implements TransactionStrategy {
+         @Override
+         public void processTransaction(double amount, String category, String date) {
+             totalAmount -= amount;
+             totalExpenses += amount;
+             expenseCount++;
+             expenses.add(new String[] {"Expense", "$" + String.format("%.2f", amount), category, date});
+         }
+     }
+
+     public class SavingsStrategy implements TransactionStrategy {
+         @Override
+         public void processTransaction(double amount, String category, String date) {
+             totalAmount += amount;
+             totalSavings += amount;
+             savingsCount++;
+             savings.add(new String[] {"Saving", "$" + String.format("%.2f", amount), category, date});
+         }
+     }
+     ```
+     Use the strategies in the dialog methods:
+     ```java
+     TransactionStrategy strategy = isExpense ? new ExpenseStrategy() : new SavingsStrategy();
+     strategy.processTransaction(amount, category, date);
+     ```
+
+4. Factory Method Pattern
+   - Why: We noticed during the creatio of dialogs, a process follows where a common structure
+      is formed. A factory could abstract and standardize the creation process.
+   - Integration:
+     Create a DialogFactory:
+     ```java
+     public class DialogFactory {
+         public static JDialog createDialog(String type) {
+             if (type.equals("Expense")) {
+                 return new ExpenseDialog();
+             } else if (type.equals("Savings")) {
+                 return new SavingsDialog();
+             }
+             return null;
+         }
+     }
+     ```
