@@ -269,7 +269,6 @@ public class ExpenseTracker {
             table.setModel(new DefaultTableModel(filteredArray, columnNames));
         }
     
-        // Reapply the custom renderer to the "Type" column
         table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
