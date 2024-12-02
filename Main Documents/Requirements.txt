@@ -1,0 +1,14 @@
+Project Requirements
+
+Problem Domain and Requirements Translation
+Clients Need: A personal finance tool that enables a user to log, query, and analyze expenses through an easy-to-use CLI. Users can add expenses with specific details (date, amount, category, tags) and set budget goals. They also need summary reports and insights into their spending habits.
+Epic Requirement Main
+
+Epic: As a user, I want to track and analyze my spending so I can manage my budget effectively.
+
+User Stories
+
+As a user, I want to add expenses with details like date, amount, category, and tags (e.g., “groceries”) to track my spending.
+As a user, I want to query my expenses by date, category, or tag so that I can analyze my spending in specific areas.
+As a user, I want to set monthly or weekly budget limits to manage my spending.
+As a user, I want to generate a report on spending trends over a specified time range.
