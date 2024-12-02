@@ -18,12 +18,6 @@ public class ExpenseTracker {
     private static List<String[]> expenses = new ArrayList<>();
     private static List<String[]> savings = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    private static Color buttonBackgroundColor;
-    @SuppressWarnings("unused")
-    private static Color buttonTextColor;
-    private static boolean isDarkMode = false;
-
     public static void main(String[] args) {
         ExpenseTracker app = new ExpenseTracker();
         app.showStartingBalanceDialog();
@@ -38,7 +32,7 @@ public class ExpenseTracker {
         frame.setLocationRelativeTo(null);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(8, 1));
+        buttonPanel.setLayout(new GridLayout(7, 1));
 
         JLabel titleLabel = new JLabel("<html><u>Expense Tracker</u></html>");
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -63,22 +57,16 @@ public class ExpenseTracker {
         JButton addButton = new JButton("Add Expense");
         JButton addSavingsButton = new JButton("Add Savings");
         JButton queryButton = new JButton("Query");
-        JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
-
-        buttonBackgroundColor = addButton.getBackground();
-        buttonTextColor = addButton.getForeground();
 
         addButton.addActionListener(e -> showAddExpenseDialog(totalLabel, countLabel));
         addSavingsButton.addActionListener(e -> showAddSavingsDialog(totalLabel, countLabel));
         queryButton.addActionListener(e -> showQueryDialog());
-        darkLightButton.addActionListener(e -> toggleDarkMode(frame));
         exitButton.addActionListener(e -> System.exit(0));
 
         buttonPanel.add(addButton);
         buttonPanel.add(addSavingsButton);
         buttonPanel.add(queryButton);
-        buttonPanel.add(darkLightButton);
         buttonPanel.add(exitButton);
 
         frame.add(buttonPanel);
@@ -98,10 +86,6 @@ public class ExpenseTracker {
     }
 
     private void showAddExpenseDialog(JLabel totalLabel, JLabel countLabel) {
-        if (isDarkMode) {
-            applyDarkModeToDialogs();
-        }
-
         String amountStr = JOptionPane.showInputDialog("Enter Expense Amount:");
         if (amountStr == null) {
             return;
@@ -133,10 +117,6 @@ public class ExpenseTracker {
     }
 
     private void showAddSavingsDialog(JLabel totalLabel, JLabel countLabel) {
-        if (isDarkMode) {
-            applyDarkModeToDialogs();
-        }
-
         String amountStr = JOptionPane.showInputDialog("Enter Savings Amount:");
         if (amountStr == null) {
             return;
@@ -198,13 +178,6 @@ public class ExpenseTracker {
         table.setPreferredScrollableViewportSize(new Dimension(450, 300));
         table.setFillsViewportHeight(true);
 
-        if (isDarkMode) {
-            table.setBackground(Color.DARK_GRAY);
-            table.setForeground(Color.WHITE);
-            table.getTableHeader().setBackground(Color.BLACK);
-            table.getTableHeader().setForeground(Color.WHITE);
-        }
-
         table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -226,37 +199,5 @@ public class ExpenseTracker {
         containerPanel.add(scrollPane, BorderLayout.CENTER);
 
         JOptionPane.showMessageDialog(null, containerPanel, "Expenses and Savings", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void toggleDarkMode(JFrame frame) {
-        isDarkMode = !isDarkMode;
-    
-        Color backgroundColor = isDarkMode ? Color.DARK_GRAY : Color.LIGHT_GRAY;
-        Color textColor = isDarkMode ? Color.WHITE : Color.BLACK;
-    
-        frame.getContentPane().setBackground(backgroundColor);
-    
-        for (Component comp : frame.getContentPane().getComponents()) {
-            if (comp instanceof JPanel) {
-                comp.setBackground(backgroundColor);
-                for (Component innerComp : ((JPanel) comp).getComponents()) {
-                    if (innerComp instanceof JButton || innerComp instanceof JLabel) {
-                        innerComp.setBackground(backgroundColor);
-                        innerComp.setForeground(textColor);
-                    }
-                }
-            } else if (comp instanceof JLabel) {
-                comp.setForeground(textColor);
-            }
-        }
-    
-        SwingUtilities.updateComponentTreeUI(frame);
-    }
-    
-
-    private void applyDarkModeToDialogs() {
-        UIManager.put("OptionPane.background", Color.DARK_GRAY);
-        UIManager.put("Panel.background", Color.DARK_GRAY);
-        UIManager.put("OptionPane.messageForeground", Color.WHITE);
     }
 }
