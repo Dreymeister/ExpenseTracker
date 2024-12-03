@@ -105,4 +105,4 @@ Design Patterns Analysis File for ExpenseTracker
 ---
 During the development of version 1, we noticed that our stakeholders wanted more features to the second version.
 
-This included the dark more applied themeing, and the search function for the query page.
+This included the dark more applied themeing, and the search function for the query page, with proper labeling for all entries.
