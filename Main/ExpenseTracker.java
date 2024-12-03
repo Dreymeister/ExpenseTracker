@@ -20,10 +20,6 @@ public class ExpenseTracker {
     private static List<String[]> expenses = new ArrayList<>();
     private static List<String[]> savings = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    private static Color buttonBackgroundColor;
-    @SuppressWarnings("unused")
-    private static Color buttonTextColor;
     private static boolean isDarkMode = false;
 
     public static void main(String[] args) {
@@ -48,8 +44,7 @@ public class ExpenseTracker {
 
         JLabel totalLabel = new JLabel("Total Balance: $" + String.format("%.2f", totalAmount));
         totalLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        Font largeFont = new Font("Arial", Font.BOLD, 25);
-        totalLabel.setFont(largeFont);
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 25));
 
         JLabel countLabel = new JLabel("Expenses: $" + String.format("%.2f", totalExpenses) +
                 " (" + expenseCount + " entries) | " +
@@ -64,12 +59,9 @@ public class ExpenseTracker {
 
         JButton addButton = new JButton("Add Expense");
         JButton addSavingsButton = new JButton("Add Savings");
-        JButton queryButton = new JButton("Query"); // Fixed
+        JButton queryButton = new JButton("Query");
         JButton darkLightButton = new JButton("Toggle Dark Mode");
         JButton exitButton = new JButton("Exit");
-
-        buttonBackgroundColor = addButton.getBackground();
-        buttonTextColor = addButton.getForeground();
 
         addButton.addActionListener(e -> showAddExpenseDialog(totalLabel, countLabel));
         addSavingsButton.addActionListener(e -> showAddSavingsDialog(totalLabel, countLabel));
@@ -171,12 +163,10 @@ public class ExpenseTracker {
 
     private void updateLabels(JLabel totalLabel, JLabel countLabel) {
         totalLabel.setText("Total Balance: $" + String.format("%.2f", totalAmount));
-
         String expenseText = "Expenses: <font color='red'>$" + String.format("%.2f", totalExpenses) + "</font>" +
                 " (" + expenseCount + " entries)";
         String savingsText = "Savings: <font color='green'>$" + String.format("%.2f", totalSavings) + "</font>" +
                 " (" + savingsCount + " entries)";
-
         countLabel.setText("<html>" + expenseText + " | " + savingsText + "</html>");
     }
 
@@ -268,7 +258,6 @@ public class ExpenseTracker {
             filteredData.toArray(filteredArray);
             table.setModel(new DefaultTableModel(filteredArray, columnNames));
         }
-    
         table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -285,37 +274,52 @@ public class ExpenseTracker {
         });
     
         table.repaint();
-    }    
+    }
+    
 
     private void toggleDarkMode(JFrame frame) {
         isDarkMode = !isDarkMode;
-    
-        Color backgroundColor = isDarkMode ? Color.DARK_GRAY : Color.LIGHT_GRAY;
+
+        Color backgroundColor = isDarkMode ? Color.DARK_GRAY : null;
         Color textColor = isDarkMode ? Color.WHITE : Color.BLACK;
-    
+
         frame.getContentPane().setBackground(backgroundColor);
-    
-        for (Component comp : frame.getContentPane().getComponents()) {
-            if (comp instanceof JPanel) {
-                comp.setBackground(backgroundColor);
-                for (Component innerComp : ((JPanel) comp).getComponents()) {
-                    if (innerComp instanceof JButton || innerComp instanceof JLabel) {
-                        innerComp.setBackground(backgroundColor);
-                        innerComp.setForeground(textColor);
-                    }
-                }
-            } else if (comp instanceof JLabel) {
-                comp.setForeground(textColor);
-            }
-        }
-    
+        updateComponentColors(frame.getContentPane(), backgroundColor, textColor);
+        applyDarkModeToDialogs();
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
+    private void updateComponentColors(Container container, Color backgroundColor, Color textColor) {
+        for (Component comp : container.getComponents()) {
+            if (comp instanceof JPanel) {
+                comp.setBackground(backgroundColor);
+                updateComponentColors((JPanel) comp, backgroundColor, textColor);
+            } else if (comp instanceof JButton || comp instanceof JLabel) {
+                comp.setBackground(backgroundColor);
+                comp.setForeground(textColor);
+            } else if (comp instanceof JTable) {
+                JTable table = (JTable) comp;
+                table.setBackground(backgroundColor);
+                table.setForeground(textColor);
+                table.getTableHeader().setBackground(backgroundColor);
+                table.getTableHeader().setForeground(textColor);
+            }
+        }
+    }
+
     private void applyDarkModeToDialogs() {
-        UIManager.put("OptionPane.background", Color.DARK_GRAY);
-        UIManager.put("Panel.background", Color.DARK_GRAY);
-        UIManager.put("OptionPane.messageForeground", Color.WHITE);
+        if (isDarkMode) {
+            UIManager.put("OptionPane.background", Color.DARK_GRAY);
+            UIManager.put("Panel.background", Color.DARK_GRAY);
+            UIManager.put("OptionPane.messageForeground", Color.WHITE);
+            UIManager.put("TextField.background", Color.DARK_GRAY);
+            UIManager.put("TextField.foreground", Color.WHITE);
+        } else {
+            UIManager.put("OptionPane.background", null);
+            UIManager.put("Panel.background", null);
+            UIManager.put("OptionPane.messageForeground", null);
+            UIManager.put("TextField.background", null);
+            UIManager.put("TextField.foreground", null);
+        }
     }
 }
-
