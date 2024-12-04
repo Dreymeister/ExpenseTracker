@@ -1,5 +1,6 @@
 package test;
 
+import Main.ExpenseTracker;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

@@ -1,0 +1,15 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.project.sourcePaths": [
+        "Main",
+        "test"
+    ],
+    "java.test.config": {
+        "name": "JUnit Test Configuration",
+        "workingDirectory": "${workspaceFolder}",
+        "vmArgs": "--module-path lib --add-modules junit.jupiter"
+    },
+    "java.test.defaultConfig": "JUnit Test Configuration"
+}
