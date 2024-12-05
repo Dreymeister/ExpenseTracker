@@ -12,3 +12,4 @@ As a user, I want to add expenses with details like date, amount, category, and 
 As a user, I want to query my expenses by date, category, or tag so that I can analyze my spending in specific areas.
 As a user, I want to set monthly or weekly budget limits to manage my spending.
 As a user, I want to generate a report on spending trends over a specified time range.
+As a user, I want to change color of the program between light and dark.
